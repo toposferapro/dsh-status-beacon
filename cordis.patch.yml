@@ -1,0 +1,8 @@
+# dsh-status-indicator bundle patch
+#
+# Одна строка плагина на host-плоскости. name обязан совпадать с именем пакета:
+# по нему client-modules находит package.json с объявлением dsh.client и отдаёт
+# браузерную половину на /plugins/dsh-status-indicator/client.js.
+- insert:
+    - id: dsh-status-indicator
+      name: 'dsh-status-indicator'
