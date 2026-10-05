@@ -43,8 +43,30 @@ widget matches the interface and follows the dark theme.
 dsh plugin --profile web add github:toposferapro/dsh-status-beacon#<commit>
 ```
 
-After any `dsh plugin add/remove`, check `dsh.profile.bundles`: this plugin must
-stay in the bundle list.
+If `git` is not available — for example inside the DSH container itself, where
+`git` is often absent — the `github:` form cannot be resolved, because the
+package manager shells out to `git` for it. Install the same pinned commit from
+a tarball URL instead:
+
+```sh
+dsh plugin --profile web add \
+  https://codeload.github.com/toposferapro/dsh-status-beacon/tar.gz/<commit>
+```
+
+Either form adds both the dependency and the `dsh.profile.bundles` entry. After
+any `dsh plugin add/remove`, check `dsh.profile.bundles`: this plugin must stay
+in the bundle list.
+
+Plugins are loaded when DSH starts, so **restart the `dsh` container** after
+installing:
+
+```sh
+sudo docker restart dsh
+```
+
+Until that restart the host half is not running and
+`/plugins/dsh-status-beacon/api` answers 404. To roll back, run
+`dsh plugin --profile web remove dsh-status-beacon` and restart again.
 
 ## Requirements
 
