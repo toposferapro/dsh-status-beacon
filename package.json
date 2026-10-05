@@ -1,9 +1,29 @@
 {
-  "name": "dsh-status-indicator",
+  "name": "dsh-status-beacon",
   "version": "0.1.0",
-  "description": "Светофор доступности DeepSeek API на панели DSH: живой пробник и статус-лента",
+  "description": "DeepSeek API availability traffic light for DSH: a live reachability probe plus the official status feed",
   "type": "module",
   "license": "MIT",
+  "author": "toposferapro",
+  "homepage": "https://github.com/toposferapro/dsh-status-beacon#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/toposferapro/dsh-status-beacon.git"
+  },
+  "bugs": {
+    "url": "https://github.com/toposferapro/dsh-status-beacon/issues"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh-plugin",
+    "deepseek",
+    "status",
+    "availability",
+    "traffic-light"
+  ],
+  "engines": {
+    "node": ">=22.19.0"
+  },
   "main": "./lib/index.js",
   "exports": {
     ".": "./lib/index.js",

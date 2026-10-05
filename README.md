@@ -1,43 +1,57 @@
-# dsh-status-indicator
+# dsh-status-beacon
 
-Светофор доступности DeepSeek API для DeepSeek Harness (DSH).
+Availability traffic light for the DeepSeek API, as a DeepSeek Harness (DSH) plugin.
 
-Цветная точка в ряду инструментов редактора (слева от меню модели):
+A coloured dot in the composer tool row (left of the model menu):
 
-- **зелёный** — API жив, деградация не объявлена;
-- **жёлтый** — объявлена деградация или идёт инцидент;
-- **красный** — API не отвечает или объявлен сбой;
-- **серый** — данных ещё нет.
+- **green** — All Systems Operational;
+- **yellow** — Degraded Performance;
+- **orange** — Partial Outage;
+- **red** — Full Outage, or the API is not answering;
+- **grey** — state unknown (the status feed cannot be read).
 
-Клик по точке открывает панель с деталями: задержка ответа, последний инцидент
-из статус-ленты, затронутые компоненты и время проверки.
+Clicking the dot opens a panel anchored to it by a caret: API response latency,
+the latest incident with its lifecycle stage (Investigating → Identified →
+Monitoring → Resolved), its start time, the affected components, the incident
+description and a link to the status page.
 
-## Как это работает
+## How it works
 
-Host-половина раз в минуту снимает два независимых сигнала:
+The host half takes two independent readings once a minute:
 
-1. **Доступность** — `GET https://api.deepseek.com/models` без ключа: `200/401/403`
-   означают, что сервер жив, а таймаут, 5xx или обрыв — что не отвечает.
-2. **Статус-лента** — `https://status.deepseek.com/history.rss`: объявлена ли
-   деградация или сбой и что затронуто.
+1. **Reachability** — `GET https://api.deepseek.com/models` without a key:
+   `200/401/403` means the server is alive, while a timeout, 5xx or network
+   break means it is not answering.
+2. **Status feed** — `https://status.deepseek.com/history.rss`: the latest
+   incident, its stage and what it affected.
 
-Ключ модели не используется намеренно: сигнал «жив/не жив» снимается без
-авторизации, а хранилище ключа меняется между версиями DSH. Благодаря этому
-плагин переживает обновление платформы.
+The colour follows DeepSeek's own four-state scale. A **closed** incident never
+tints the light — only an active one does, otherwise a resolved degradation
+would keep the indicator yellow forever.
 
-Клиентская половина берёт итог с маршрута `/plugins/dsh-status-indicator/api`
-и обновляет точку раз в 30 секунд.
+The model API key is deliberately **not** used: the alive/not-alive signal is
+taken without authorisation, so the plugin survives DSH upgrades that move the
+key storage around.
 
-## Установка
+The browser half reads `/plugins/dsh-status-beacon/api` and refreshes the dot
+every 30 seconds. Styling uses the DSH design tokens (`--dsw-alias-*`), so the
+widget matches the interface and follows the dark theme.
+
+## Installation
 
 ```sh
-dsh plugin --profile web add github:toposferapro/dsh-status-indicator#<коммит>
+dsh plugin --profile web add github:toposferapro/dsh-status-beacon#<commit>
 ```
 
-После любой операции `dsh plugin add/remove` проверь `dsh.profile.bundles`:
-плагин должен остаться в бандлах, а `dsh-telegram-multiagent` и `dsh-find-plugin`
-— нет.
+After any `dsh plugin add/remove`, check `dsh.profile.bundles`: this plugin must
+stay in the bundle list.
 
-## Лицензия
+## Requirements
+
+- DSH with the web profile.
+- Outbound HTTPS to `api.deepseek.com` and `status.deepseek.com`.
+- No API key, no extra dependencies.
+
+## License
 
 MIT.
